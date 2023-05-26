@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  api:
+#独自のイメージDockerfileのパスの指定
+    build: ./api
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+#depends_on:を使ってあげる事で先にdbのコンテナから作ってねって意味になる。
+  db:
+#docker hubからのイメージを使う
+    image: postgres:15
+#何のportを使えばいいのかは、すべてdocker hubに記載されてる。
+    ports:
+      - 5432:5432
+#環境変数の設定
+    environment:
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRS_USER=postgres
+      - POSTGRES_DB=appdb
+    volumes:
+      - db-storage:/var/postgresql/data
+      - ./db/initdb:/docker-entrypoint-initdb.d
+#DBコンテナが接続するvolumeの設定
+#[volume名]:[コンテナ内の絶対パス]
+#テーブル、バインドマウントの設定[ホストの絶対パス]:[コンテナ内の絶対パス]
+
+volumes:
+  db-storage:
